@@ -1,0 +1,152 @@
+substitutions:
+  name: "IKEA Air Filter" # Location & Entity Names (Capitals and Spaces Allowed)
+
+esphome:
+  name: ikea-air-filter
+  platform: ESP8266
+  board: d1_mini
+  esp8266_restore_from_flash: true
+
+## Read the stored value for the "Filter Age" ##
+  on_boot:
+    - pulse_counter.set_total_pulses:
+        id: filter_counter
+        value: !lambda "return id(filter_age) * 100;"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+api:
+ota:
+logger:
+  logs:
+    pulse_counter: none
+    number: none
+    sensor: none
+    switch: none
+
+preferences:
+  flash_write_interval: 180s
+
+globals:
+## Save the Filter Age Value to Flash and restore it ##
+  - id: filter_age
+    type: int
+    restore_value: yes
+
+binary_sensor:
+## Sensor "Filter Dirty" for Home Assistant ##
+  - platform: template
+    name: $name AP Filter Dirty
+    id: filter_dirty
+    publish_initial_state: true     
+
+button:
+## Reset Button for "Filter Age" ##
+  - platform: template
+    name: $name AP Reset
+    id: reset_button
+    ## Reset the counter ##
+    on_press:
+      - pulse_counter.set_total_pulses:
+          id: filter_counter
+          value: 0
+      - delay: 1s
+      ## Turn of the warning LED ##
+      - switch.turn_off: onboard_led
+      - lambda: !lambda |
+          id(filter_dirty).publish_state(false);
+      ## Immediatly save to Flash ##
+      - lambda: !lambda |
+          global_preferences->sync();
+
+number:
+## Slider for Fan Speed 0-6, 0 = Off ##
+  - platform: template
+    name: ${name} AP Speed
+    id: fan_speed
+    icon: mdi:fan
+    update_interval: never
+    optimistic: true
+    min_value: 0
+    max_value: 6
+    initial_value: 0
+    step: 1
+    set_action:
+      - if:
+          condition:
+            ## Is the slider is 0 or above? ##
+            - lambda: |-
+                return x >= 1;
+          then: 
+            ## Turn on the fan MOSFET and the "servo" ##
+            - switch.turn_on: fan_mosfet
+            - servo.write:
+                id: fan_motor
+                level: 1
+            ## Change the PWN signal based in the Slider value (Multiples of 50) ##
+            - output.esp8266_pwm.set_frequency:
+                id: fan_pwm
+                frequency: !lambda return x * 50;
+          ## If not (else) turn off the MOSFET and the set PWM to 0 ##
+          else:
+            - switch.turn_off: fan_mosfet
+            - output.esp8266_pwm.set_frequency:
+                id: fan_pwm
+                frequency: !lambda return 0;
+
+sensor:
+## Read the pulses coming back the from the fan motor ##
+  - platform: pulse_counter
+    pin: D6
+    id: filter_counter
+    count_mode:
+      rising_edge: INCREMENT
+      falling_edge: DISABLE
+    update_interval: 2s
+    filters:
+      - multiply: 0.0001
+## Keep a running total of how much the filter has been used ##
+    total:
+      name: $name AP Filter Age ### REMOVE FOR FINAL UPLOAD ###
+      unit_of_measurement: Age
+      filters:
+        - multiply: 0.01
+      on_value:
+        - lambda: !lambda |
+            id(filter_age) = x;
+        # 
+        - lambda: !lambda |
+            auto timer = 30; // "30" for demo. Recommended 6 Months = 262,800
+            if (x >= timer) {
+              id(onboard_led).publish_state(true), id(filter_dirty).publish_state(true);
+            }
+
+servo:
+## Set the PWM signal to 50% Duty cycle ##
+  - id: fan_motor
+    output: fan_pwm
+    max_level: 50%
+output:
+  - platform: esp8266_pwm
+    id: fan_pwm
+    pin:
+      number: D7
+
+switch:
+## Control the on-board Motor Power MOSFET ##
+  - platform: gpio
+    pin: D2
+    id: fan_mosfet
+    on_turn_on:
+      switch.turn_on: onboard_led
+    on_turn_off:
+      switch.turn_off: onboard_led
+
+## Filter Dirty LED ##
+  - platform: gpio
+    id: onboard_led
+    pin:
+      number: D4
+      inverted: true
