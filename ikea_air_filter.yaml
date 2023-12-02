@@ -38,14 +38,14 @@ globals:
 binary_sensor:
 ## Sensor "Filter Dirty" for Home Assistant ##
   - platform: template
-    name: $name AP Filter Dirty
+    name: $name Dirty
     id: filter_dirty
     publish_initial_state: true     
 
 button:
 ## Reset Button for "Filter Age" ##
   - platform: template
-    name: $name AP Reset
+    name: $name Reset
     id: reset_button
     ## Reset the counter ##
     on_press:
@@ -64,7 +64,7 @@ button:
 number:
 ## Slider for Fan Speed 0-6, 0 = Off ##
   - platform: template
-    name: ${name} AP Speed
+    name: ${name} Speed
     id: fan_speed
     icon: mdi:fan
     update_interval: never
@@ -109,7 +109,7 @@ sensor:
       - multiply: 0.0001
 ## Keep a running total of how much the filter has been used ##
     total:
-      name: $name AP Filter Age ### REMOVE FOR FINAL UPLOAD ###
+      name: $name Age
       unit_of_measurement: Age
       filters:
         - multiply: 0.01
@@ -118,7 +118,7 @@ sensor:
             id(filter_age) = x;
         # 
         - lambda: !lambda |
-            auto timer = 30; // "30" for demo. Recommended 6 Months = 262,800
+            auto timer = 262800; 
             if (x >= timer) {
               id(onboard_led).publish_state(true), id(filter_dirty).publish_state(true);
             }
