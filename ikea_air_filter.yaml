@@ -1,8 +1,8 @@
 substitutions:
-  name: "IKEA Air Filter" # Location & Entity Names (Capitals and Spaces Allowed)
+  name: "Studio Filter" # Location & Entity Names (Capitals and Spaces Allowed)
 
 esphome:
-  name: ikea-air-filter
+  name: studio-air-filter
   platform: ESP8266
   board: d1_mini
   esp8266_restore_from_flash: true
@@ -40,6 +40,7 @@ binary_sensor:
   - platform: template
     name: $name Dirty
     id: filter_dirty
+    icon: mdi:trash-can-outline
     publish_initial_state: true     
 
 button:
@@ -47,6 +48,7 @@ button:
   - platform: template
     name: $name Reset
     id: reset_button
+    icon: mdi:Redo
     ## Reset the counter ##
     on_press:
       - pulse_counter.set_total_pulses:
@@ -66,7 +68,7 @@ number:
   - platform: template
     name: ${name} Speed
     id: fan_speed
-    icon: mdi:fan
+    icon: mdi:air-filter
     update_interval: never
     optimistic: true
     min_value: 0
@@ -110,15 +112,16 @@ sensor:
 ## Keep a running total of how much the filter has been used ##
     total:
       name: $name Age
+      icon: mdi:biohazard
       unit_of_measurement: Age
       filters:
         - multiply: 0.01
       on_value:
         - lambda: !lambda |
             id(filter_age) = x;
-        # Turn on On=Board LED and "Dirty" Binary Sensor
+        # Turn On: On-Board LED and "Dirty" Binary Sensor ##
         - lambda: !lambda |
-            auto timer = 3153600; 
+            auto timer = 3153600; // "30" for demo. Recommended 6 Months = 3153600
             if (x >= timer) {
               id(onboard_led).publish_state(true), id(filter_dirty).publish_state(true);
             }
