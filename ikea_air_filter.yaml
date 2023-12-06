@@ -116,7 +116,7 @@ sensor:
       on_value:
         - lambda: !lambda |
             id(filter_age) = x;
-        # 
+        # Turn on On=Board LED and "Dirty" Binary Sensor
         - lambda: !lambda |
             auto timer = 3153600; 
             if (x >= timer) {
