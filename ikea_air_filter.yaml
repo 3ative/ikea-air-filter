@@ -118,7 +118,7 @@ sensor:
             id(filter_age) = x;
         # 
         - lambda: !lambda |
-            auto timer = 262800; 
+            auto timer = 3153600; 
             if (x >= timer) {
               id(onboard_led).publish_state(true), id(filter_dirty).publish_state(true);
             }
