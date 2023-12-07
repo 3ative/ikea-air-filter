@@ -5,9 +5,13 @@ Converting and adding Wi-Fi to an off-the-shelf **VINDRIKTNING Air Filter**
 #### ⚡*Code-y Bits*
 [Air Filter ESPHome Code](https://github.com/3ative/ikea-air-filter/blob/main/ikea_air_filter.yaml)
 
-#### 🎬YouTube tutorial:
-[IKEA Air Filter Tutorial](https://youtu.be/WB4xxhgggHQ)
+#### 🎬YouTube tutorials:
+[Part 1 - IKEA Air Quality ESPHome Convert](https://youtu.be/YmqtMTO5NVc)
 
+[Part 2 - IKEA Air Filter ESPHome Convert](https://youtu.be/WB4xxhgggHQ)
+
+#### 🎬Coming Soon:
+[Part 3 - Automating the System](#)
 ___
 
 #### 💖 Found this useful, want to say '*Thanks*' and support my efforts. *CHEERS*🍺
