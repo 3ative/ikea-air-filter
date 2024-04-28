@@ -1,5 +1,5 @@
 substitutions:
-  name: "Studio Filter" # Location & Entity Names (Capitals and Spaces Allowed)
+  name: "Studio Filter" # Location & Entity Names (Capitals & Spaces Allowed)
 
 esphome:
   name: studio-air-filter
