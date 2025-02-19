@@ -10,8 +10,7 @@ Converting and adding Wi-Fi to an off-the-shelf **VINDRIKTNING Air Filter**
 
 [Part 2 - IKEA Air Filter ESPHome Convert](https://youtu.be/WB4xxhgggHQ)
 
-#### 🎬Coming Soon:
-[Part 3 - Automating the System](#)
+[Part 3 - Automating the System](https://youtu.be/07jmTm7Hdhs)
 ___
 
 #### 💖 Found this useful, want to say '*Thanks*' and support my efforts. *CHEERS*🍺
