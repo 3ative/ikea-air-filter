@@ -42,7 +42,8 @@ binary_sensor:
     name: $name Dirty
     id: filter_dirty
     icon: mdi:trash-can-outline
-    publish_initial_state: true     
+    #publish_initial_state: true   ## Depreciated
+    trigger_on_initial_state: true ## New for v2025.7.0
 
 button:
 ## Reset Button for "Filter Age" ##
